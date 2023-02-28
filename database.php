@@ -15,23 +15,23 @@ if(isset($_POST['submit']))
 
     // Get Multi Images    
     $targetDir = "multi/"; 
-    $insertValuesSQL = ''; 
 
-    foreach($_FILES['files']['name'] as $key=>$val){      
+    $file_name_form = $_FILES["files"]["name"];           
 
-        $file_name = basename($_FILES['files']['name'][$key]);
-        $ext = pathinfo($file_name, PATHINFO_EXTENSION);
-        $targetFile = $targetDir.$file_name;
-        if(move_uploaded_file($_FILES["files"]["tmp_name"][$key], $targetFile)){          
+        foreach($file_name_form as $key=>$val)        
+        {
+            $file_name = basename($_FILES['files']['name'][$key]);     
+            $ext = pathinfo($file_name, PATHINFO_EXTENSION);
+
+            $randomnumber = time() - rand(0, 999999);
+            $file_name = "IMG".$randomnumber.'.'.$ext; 
+            $targetFile = $targetDir.$file_name;
+            move_uploaded_file($_FILES["files"]["tmp_name"][$key], $targetFile);
+
             $insertQrySplit[] = $file_name;                  
-            $image_str = implode(',', $insertQrySplit);         
-            }
-        else {
-            $errors[] = "Something went wrong- File - $file_name";
+            $image_str = implode(',', $insertQrySplit); 
         }
-    }
-       
-
+     
        $query="select * from images";
        $result=mysqli_query($conn,$query);
         if ($result->num_rows > -1){  
